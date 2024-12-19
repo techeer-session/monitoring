@@ -1,0 +1,25 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /traefik/logs/access.log
+    processors:
+      - decode_json_fields:
+          fields: ["message"]
+          target: "parsed_message"
+          overwrite_keys: true
+      # - geoip:
+      #     field: "parsed_message.request_X-Real-Ip"
+      #     target_field: "geoip"
+
+output.logstash:
+  enabled: true
+  hosts: ["logstash:5044"]
+
+setup.kibana:
+  host: "http://kibana:5601"
+  username: "elastic"
+  password: "password"
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml

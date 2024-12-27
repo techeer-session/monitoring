@@ -89,15 +89,12 @@ WSGI_APPLICATION = 'todo_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django_prometheus.db.backends.mysql',
-        'NAME': 'session_db',
-        'USER': 'session_example',
-        'PASSWORD': 'session_example',
+        'ENGINE': 'django_prometheus.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'db',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'PORT': '5432',
     }
 }
 
@@ -143,6 +140,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq-example:5672//'
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
 
-CELERY_RESULT_BACKEND = 'redis://redis-example:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'

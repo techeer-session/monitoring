@@ -4,6 +4,8 @@ from rest_framework.decorators import action
 from .models import User2, Todo2
 from .serializers import UserSerializer, TodoSerializer
 from .tasks import add_with_delay  # Import the Celery task
+from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
+import time
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User2.objects.all()
@@ -25,7 +27,11 @@ class TodoViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         # Call the Celery task asynchronously
-        result = add_with_delay.apply_async((1, 2))
+        time.sleep(5)
+        carrier = {}
+        TraceContextTextMapPropagator().inject(carrier) 
+        result = add_with_delay.apply_async((1,2,"todo_created",carrier))
+        # result = add_with_delay.apply_async((1, 2))
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

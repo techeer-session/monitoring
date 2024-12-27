@@ -37,6 +37,7 @@ packaging==24.2
 prometheus_client==0.20.0
 prompt_toolkit==3.0.47
 protobuf==5.29.2
+psycopg2-binary==2.9.10
 python-dateutil==2.9.0.post0
 pytz==2024.1
 redis==5.0.7

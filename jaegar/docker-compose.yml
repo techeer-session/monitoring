@@ -67,6 +67,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+      - "15692:15692"
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
@@ -74,10 +75,9 @@ services:
   jaeger:
     image: jaegertracing/all-in-one
     ports:
-      - "16686:16686" # 화면
+      - "16686:16686" # web
       - "14268:14268" # http
       - "14250:14250" # grpc
-      # - "4317:4317"
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib
@@ -87,6 +87,46 @@ services:
     volumes:
       - ./opentelemetry/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     command: ["--config", "/etc/otel-collector-config.yaml"]
+  
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+  
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.8.1
+    container_name: node_exporter
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.rootfs=/host'
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  grafana:
+    image: grafana/grafana:9.5.20
+    user: root
+    volumes:
+      - grafan_data:/etc/grafana/provisioning
+      - grafan_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:
+  grafan_data:

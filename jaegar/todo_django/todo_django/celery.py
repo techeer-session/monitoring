@@ -26,7 +26,7 @@ trace.set_tracer_provider(traceProvider)
 
 tracer = trace.get_tracer(__name__)
 
-app = Celery('todo_django', broker='amqp://guest:guest@rabbitmq-example//')
+app = Celery('todo_django', broker='amqp://guest:guest@rabbitmq//')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 

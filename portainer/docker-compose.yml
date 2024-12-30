@@ -1,0 +1,64 @@
+services:
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true" 
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=portainer_session_example"
+      - "--entrypoints.web.address=:80"
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--api.dashboard=true"
+      - "--metrics.prometheus=true" # 프로메테우스 설정
+      - "--metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--entryPoints.metrics.address=:8091" # 메트릭 포트 설정
+      - "--metrics.prometheus.entryPoint=metrics" # /metrics 경로로 접근 가능하도록 설정
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "8080:8080" # Dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - session_example
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - session_example
+  
+  grafana:
+    image: grafana/grafana:9.5.20
+    user: root
+    volumes:
+      - grafan_data:/etc/grafana/provisioning
+      - grafan_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - session_example
+  
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  grafan_data:
+  portainer_data:
+
+networks:
+  session_example:
+    driver: bridge

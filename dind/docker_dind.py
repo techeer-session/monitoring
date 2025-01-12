@@ -1,7 +1,7 @@
 import docker
 import time
 
-global NUM_CONTAINERS
+# global NUM_CONTAINERS
 
 def run_container(num_containers, username, service_name="grafana"):
     m = {"grafana": "3000", "prometheus": "9090"}
@@ -44,8 +44,9 @@ def run_docker_compose(container_name, repo_name, git_url):
     print(f"Output: {exec3.output.decode()}")
 
 if __name__ == "__main__":
-    NUM_CONTAINERS = 2
+    # NUM_CONTAINERS = 2
     username = input("Enter your username: ")
     service_name = input("Enter the service name: ")
-    run_container(NUM_CONTAINERS, username, service_name)
-    run_docker_compose(f"dind-{NUM_CONTAINERS}", "monitoring", "https://github.com/techeer-session/monitoring")
+    service_num = input("Enter the number of service: ")
+    run_container(service_num, username, service_name)
+    run_docker_compose(f"dind-{service_num}", "monitoring", "https://github.com/techeer-session/monitoring")

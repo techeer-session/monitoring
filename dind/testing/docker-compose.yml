@@ -1,0 +1,6 @@
+services:
+  grafana:
+    image: grafana/grafana:9.5.20
+    user: root
+    ports:
+      - "3000:3000"

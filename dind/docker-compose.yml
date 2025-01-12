@@ -1,0 +1,38 @@
+services:
+  # dind:
+  #   image: docker:dind
+  #   privileged: true
+  #   container_name: dind
+  #   ports:
+  #     - "2375:2375"
+  #     - "3000:3000"
+  #   volumes:
+  #     - .:/app
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.dind.rule=HostRegexp(`dind.localhost:{port:[0-9]+}`)"
+  #     - "traefik.http.services.dind.loadbalancer.server.scheme=http"
+  #     - "traefik.http.services.dind.loadbalancer.server.port={port}"
+  #     - "traefik.http.middlewares.dind-replacepathregex.replacepathregex.regex=^/.*"
+  #     - "traefik.http.middlewares.dind-replacepathregex.replacepathregex.replacement=/"
+  
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--api.dashboard=true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    networks:
+      - dind-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  dind-network:
+    driver: bridge
+    external: true

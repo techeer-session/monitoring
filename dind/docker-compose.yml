@@ -24,6 +24,7 @@ services:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
       - "--api.dashboard=true"
+      - "--metrics.prometheus=true"
     ports:
       - "80:80"
       - "8080:8080"

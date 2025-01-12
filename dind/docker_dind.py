@@ -3,7 +3,9 @@ import time
 
 global NUM_CONTAINERS
 
-def run_container(num_containers, username):
+def run_container(num_containers, username, service_name="grafana"):
+    m = {"grafana": "3000", "prometheus": "9090"}
+    port = m[service_name]
     client = docker.from_env()
     try:
         container = client.containers.run(
@@ -19,11 +21,11 @@ def run_container(num_containers, username):
             network="dind-network",
             labels = {
                 "traefik.enable": "true",
-                "traefik.http.routers.dind.rule": "HostRegexp(`"+username+".dind.localhost:{port:[0-9]+}`)",
-                "traefik.http.services.dind.loadbalancer.server.scheme": "http",
-                # "traefik.http.services.dind.loadbalancer.server.port": "{port}",
-                "traefik.http.middlewares.dind-replacepathregex.replacepathregex.regex": "^/.*",
-                "traefik.http.middlewares.dind-replacepathregex.replacepathregex.replacement": "/"
+                f"traefik.http.routers.{username}.rule": f"HostRegexp(`{username}.localhost`)",
+                f"traefik.http.services.{username}.loadbalancer.server.scheme": "http",
+                f"traefik.http.services.{username}.loadbalancer.server.port": port,
+                f"traefik.http.middlewares.{username}-replacepathregex.replacepathregex.regex": "^/.*",
+                f"traefik.http.middlewares.{username}-replacepathregex.replacepathregex.replacement": "/"
             },
             detach=True
         )
@@ -42,7 +44,8 @@ def run_docker_compose(container_name, repo_name, git_url):
     print(f"Output: {exec3.output.decode()}")
 
 if __name__ == "__main__":
-    NUM_CONTAINERS = 1
+    NUM_CONTAINERS = 2
     username = input("Enter your username: ")
-    run_container(NUM_CONTAINERS, username)
+    service_name = input("Enter the service name: ")
+    run_container(NUM_CONTAINERS, username, service_name)
     run_docker_compose(f"dind-{NUM_CONTAINERS}", "monitoring", "https://github.com/techeer-session/monitoring")

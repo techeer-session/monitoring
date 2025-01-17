@@ -21,6 +21,9 @@ services:
              python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/app
+    labels:
+      logging: "promtail"
+      logging_jobname: "django_logs"
 
   celery:
     build:
@@ -126,7 +129,33 @@ services:
       - grafan_data:/var/lib/grafana
     ports:
       - "3000:3000"
-
+  
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+  
+  promtail:
+    image:  grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail/config.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - -config.file=/etc/promtail/docker-config.yaml
+      - -config.expand-env=true
+  
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+  
 volumes:
   postgres_data:
   grafan_data:
+  portainer_data:

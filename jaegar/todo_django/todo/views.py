@@ -6,7 +6,9 @@ from .serializers import UserSerializer, TodoSerializer
 from .tasks import add_with_delay  # Import the Celery task
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 import time
+import logging
 
+logger = logging.getLogger(__name__)
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User2.objects.all()
     serializer_class = UserSerializer
@@ -27,6 +29,8 @@ class TodoViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         # Call the Celery task asynchronously
+        logger.error("Celery task is called")
+        logger.error("User and Task id: %s", serializer.data)
         time.sleep(5)
         carrier = {}
         TraceContextTextMapPropagator().inject(carrier) 

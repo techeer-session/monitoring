@@ -15,19 +15,19 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
   
-  traefik:
-    image: traefik:v2.9
-    container_name: traefik
-    command: 
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--api.dashboard=true"
-    ports:
-      - "80:80"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  # traefik:
+  #   image: traefik:v2.9
+  #   container_name: traefik
+  #   command: 
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #     - "--entrypoints.web.address=:80"
+  #     - "--api.dashboard=true"
+  #   ports:
+  #     - "80:80"
+  #     - "8080:8080"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
   
   swagger:
     image: swaggerapi/swagger-ui

@@ -1,13 +1,8 @@
 provider "google" {
-    credentials = file("~/Documents/Hogwarts/techeerism-94823f84d155.json")
-    project = "session-example2"
+    credentials = file("central-bulwark-448318-g0-7a3ff5b4d0f8.json")
+    project = "central-bulwark-448318-g0"
     region  = "us-central1"  
     zone    = "us-central1-c" 
-}
-
-variable "project_id" {
-  type        = string
-  description = "Google Cloud 프로젝트 ID"
 }
 
 variable "ssh_key" {
@@ -28,7 +23,7 @@ resource "google_compute_subnetwork" "subnet" {
 }
 
 resource "google_compute_address" "static_ip1" {
-    name   = "hogwarts-main-static-ip"
+    name   = "session-static-ip"
     region = "us-central1"
 }
 
@@ -39,12 +34,7 @@ resource "google_compute_firewall" "main-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "443", "2377", "7946"]  # SSH port
-    }
-
-    allow {
-        protocol = "udp"
-        ports = ["4789","7946"]
+        ports    = ["22", "80", "443", "2377", "7946"]  # SSH port
     }
 
     allow {
@@ -81,17 +71,6 @@ resource "google_compute_instance" "vm_instance1" {
 
     metadata = {
         ssh-keys = "ubuntu:${var.ssh_key}"
-        startup-script = <<-EOF
-            #!/bin/bash
-            # Cloud SQL Proxy 설치
-            wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
-            chmod +x cloud_sql_proxy
-            
-            # Cloud SQL Proxy 실행
-            ./cloud_sql_proxy -instances=${var.project_id}:us-central1:hogwarts-postgres-instance=tcp:5432 &
-
-            # Docker 및 NestJS 설정 실행
-            bash ~/Documents/Hogwarts/infra/docker.sh
-        EOF
+        startup-script = file("docker.sh")
     }
 }

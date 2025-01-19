@@ -4,7 +4,7 @@ import time
 # global NUM_CONTAINERS
 
 def run_container(num_containers, username, service_name="grafana"):
-    m = {"grafana": "3000", "prometheus": "9090"}
+    m = {"grafana": "3000", "prometheus": "9090", "swagger": "8080"}
     port = m[service_name]
     client = docker.from_env()
     try:

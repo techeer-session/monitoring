@@ -5,6 +5,12 @@ services:
     user: root
     ports:
       - "3000:3000"
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.grafana.entrypoints=websecure
+      - traefik.http.routers.grafana.tls.certresolver=letsencrypt
+      - traefik.http.routers.grafana.rule=Host(`grafana.cloudsession.cloud`)
   
   prometheus:
     image: prom/prometheus
@@ -15,19 +21,27 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
   
-  # traefik:
-  #   image: traefik:v2.9
-  #   container_name: traefik
-  #   command: 
-  #     - "--api.insecure=true"
-  #     - "--providers.docker=true"
-  #     - "--entrypoints.web.address=:80"
-  #     - "--api.dashboard=true"
-  #   ports:
-  #     - "80:80"
-  #     - "8080:8080"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
+  traefik:
+    image: traefik:v2.9
+    container_name: traefik
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--api.dashboard=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=whysano517@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - traefik-certificates:/letsencrypt  
   
   swagger:
     image: swaggerapi/swagger-ui
@@ -38,3 +52,6 @@ services:
       - SWAGGER_JSON=/usr/share/nginx/html/swagger-files/swagger.json
     volumes:
       - ./swagger-files:/usr/share/nginx/html/swagger-files
+
+volumes:
+  traefik-certificates:

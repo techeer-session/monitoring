@@ -5,12 +5,12 @@ services:
     user: root
     ports:
       - "3000:3000"
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.http.services.grafana.loadbalancer.server.port=3000
-    #   - traefik.http.routers.grafana.entrypoints=websecure
-    #   - traefik.http.routers.grafana.tls.certresolver=letsencrypt
-    #   - traefik.http.routers.grafana.rule=Host(`grafana.cloudsession.cloud`)
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.http.routers.grafana.entrypoints=websecure
+      - traefik.http.routers.grafana.tls.certresolver=letsencrypt
+      - traefik.http.routers.grafana.rule=Host(`grafana.cloudsession.cloud`)
   
   prometheus:
     image: prom/prometheus
@@ -42,13 +42,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - traefik-certificates:/letsencrypt  
-    # labels:
-    #     - "traefik.enable=true"
-    #     - "traefik.http.routers.mydashboard.rule=Host(`traefik.cloudsession.cloud`)"
-    #     - 'traefik.http.routers.mydashboard.entrypoints=websecure'
-    #     - "traefik.http.routers.mydashboard.service=api@internal"
-    #     - "traefik.http.routers.mydashboard.tls.certresolver=letsencrypt"
-    #     - "traefik.http.services.mydashboard.loadbalancer.server.port=8090"
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.mydashboard.rule=Host(`traefik.cloudsession.cloud`)"
+        - 'traefik.http.routers.mydashboard.entrypoints=websecure'
+        - "traefik.http.routers.mydashboard.service=api@internal"
+        - "traefik.http.routers.mydashboard.tls.certresolver=letsencrypt"
+        - "traefik.http.services.mydashboard.loadbalancer.server.port=8090"
   
   swagger:
     image: swaggerapi/swagger-ui

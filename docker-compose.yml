@@ -38,10 +38,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8081:8080"
+      - "8090:8090"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - traefik-certificates:/letsencrypt  
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.mydashboard.rule=Host(`traefik.cloudsession.cloud`)"
+        - 'traefik.http.routers.mydashboard.entrypoints=websecure'
+        - "traefik.http.routers.mydashboard.service=api@internal"
+        - "traefik.http.routers.mydashboard.tls.certresolver=letsencrypt"
+        - "traefik.http.services.mydashboard.loadbalancer.server.port=8090"
   
   swagger:
     image: swaggerapi/swagger-ui

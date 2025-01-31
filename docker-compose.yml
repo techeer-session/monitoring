@@ -59,6 +59,11 @@ services:
       - SWAGGER_JSON=/usr/share/nginx/html/swagger-files/swagger.json
     volumes:
       - ./swagger-files:/usr/share/nginx/html/swagger-files
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swagger.rule=Host(`swagger.cloudsession.cloud`)"
+      - 'traefik.http.routers.swagger.entrypoints=web'
+      - "traefik.http.services.swagger.loadbalancer.server.port=8080"
 
 volumes:
   traefik-certificates:

@@ -3,6 +3,15 @@ import time
 
 # global NUM_CONTAINERS
 
+while time.time() - start_time < 30:
+    if:
+        container = client.containers.list()
+        print(f"Container '{container_name}' found.")
+        break
+    else NotFound:
+        print(f"Container '{container_name}' not found, retrying...")
+        time.sleep(1)
+
 def run_container(num_containers, username, service_name="grafana"):
     m = {"grafana": "3000", "prometheus": "9090", "swagger": "8080"}
     port = m[service_name]

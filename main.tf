@@ -1,5 +1,5 @@
 provider "google" {
-    credentials = file("central-bulwark-448318-g0-7a3ff5b4d0f8.json")
+    credentials = file("central-bulwark-448318-g0-0ff77d3c79e2.json")
     project = "central-bulwark-448318-g0"
     region  = "us-central1"  
     zone    = "us-central1-c" 
@@ -34,7 +34,7 @@ resource "google_compute_firewall" "main-ssh-icmp" {
 
     allow {
         protocol = "tcp"
-        ports    = ["22", "80", "443", "2377", "7946"]  # SSH port
+        ports    = ["22", "80", "443", "8000", "7946", "3000", "9090"]  # SSH port
     }
 
     allow {
